@@ -1,11 +1,10 @@
 package com.sourcey.materiallogindemo;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-
-import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,6 +12,12 @@ import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -59,16 +64,62 @@ public class MainActivity extends AppCompatActivity {
         String password = _passwordText.getText().toString();
 
         // TODO: Implement your own authentication logic here.
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        // set your desired log level
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        httpClient.addInterceptor(logging);  // <-- this is the important line!
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constants.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(httpClient.build())
+                .build();
+
+        RequestInterface requestInterface = retrofit.create(RequestInterface.class);
+
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
+
+        Call<SignupResponseDTO> response = requestInterface.operation(user);
+
+        response.enqueue(new Callback<SignupResponseDTO>() {
+            @Override
+            public void onResponse(Call<SignupResponseDTO> call, retrofit2.Response<SignupResponseDTO> response) {
+
+                Log.d("kek", "not fail");
+                SignupResponseDTO resp = response.body();
+
+                // TODO resp must be not null
+                System.out.println(resp);
+                System.out.println(response.errorBody());
+                System.out.println(response);
+                System.out.println('\n');
+                System.out.println(response.raw());
+
+            }
+
+            @Override
+            public void onFailure(Call<SignupResponseDTO> call, Throwable t) {
+                Log.d("kek", "fail");
+
+            }
+        });
 
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
+                        Log.d("kek", "close progressdialog");
                         // On complete call either onLoginSuccess or onLoginFailed
                         onLoginSuccess();
                         // onLoginFailed();
                         progressDialog.dismiss();
                     }
                 }, 3000);
+
+        Log.d("kek", "login end");
     }
 
 
@@ -92,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onLoginSuccess() {
         _loginButton.setEnabled(true);
-        finish();
+        // finish();
     }
 
     public void onLoginFailed() {
