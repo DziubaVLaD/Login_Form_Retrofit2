@@ -1,4 +1,4 @@
-package com.sourcey.materiallogindemo;
+package com.sourcey.registration_form;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

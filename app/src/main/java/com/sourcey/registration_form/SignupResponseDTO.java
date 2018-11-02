@@ -1,4 +1,4 @@
-package com.sourcey.materiallogindemo;
+package com.sourcey.registration_form;
 
 import java.util.List;
 

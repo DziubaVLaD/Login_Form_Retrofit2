@@ -1,4 +1,4 @@
-package com.sourcey.materiallogindemo;
+package com.sourcey.registration_form;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -9,7 +9,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
+import com.google.gson.Gson;
+import com.google.gson.TypeAdapter;
+import java.io.IOException;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.OkHttpClient;
@@ -77,33 +79,40 @@ public class MainActivity extends AppCompatActivity {
                 .client(httpClient.build())
                 .build();
 
-        RequestInterface requestInterface = retrofit.create(RequestInterface.class);
+        final RequestInterface[] requestInterface = {retrofit.create(RequestInterface.class)};
 
         User user = new User();
         user.setEmail(email);
         user.setPassword(password);
 
-        Call<SignupResponseDTO> response = requestInterface.operation(user);
+        Call<SignupResponseDTO> response = requestInterface[0].operation(user);
 
         response.enqueue(new Callback<SignupResponseDTO>() {
             @Override
             public void onResponse(Call<SignupResponseDTO> call, retrofit2.Response<SignupResponseDTO> response) {
 
-                Log.d("kek", "not fail");
+                Log.d("Response", "not fail");
                 SignupResponseDTO resp = response.body();
+                if (response.code() == 400){
+                    Log.d("Response","OnResponse - Status : " + response.code());
+                    Gson gson = new Gson();
+                    TypeAdapter<SignupResponseDTO> adapter = gson.getAdapter(SignupResponseDTO.class);
+                    try {
+                        if (response.errorBody() != null)
+                            resp = adapter.fromJson(response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
 
-                // TODO resp must be not null
-                System.out.println(resp);
-                System.out.println(response.errorBody());
-                System.out.println(response);
-                System.out.println('\n');
-                System.out.println(response.raw());
+                // continue validation
+
 
             }
 
             @Override
             public void onFailure(Call<SignupResponseDTO> call, Throwable t) {
-                Log.d("kek", "fail");
+                Log.d("Response", "fail");
 
             }
         });
@@ -111,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
-                        Log.d("kek", "close progressdialog");
+                        Log.d("Response", "close progressdialog");
                         // On complete call either onLoginSuccess or onLoginFailed
                         onLoginSuccess();
                         // onLoginFailed();
@@ -119,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }, 3000);
 
-        Log.d("kek", "login end");
+        Log.d("Response", "login end");
     }
 
 
@@ -165,8 +174,8 @@ public class MainActivity extends AppCompatActivity {
             _emailText.setError(null);
         }
 
-        if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-            _passwordText.setError("between 4 and 10 alphanumeric characters");
+        if (password.isEmpty() || password.length() < 4 || password.length() > 20) {
+            _passwordText.setError("between 4 and 20 alphanumeric characters");
             valid = false;
         } else {
             _passwordText.setError(null);
