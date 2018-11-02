@@ -8,6 +8,8 @@ import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -70,6 +72,14 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
+
+        AutoCompleteTextView auto = findViewById(R.id.input_email);
+
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_dropdown_item_1line, EmailAutoCompleteEditText.domains);
+
+        auto.setAdapter(adapter);
 
     }
 
