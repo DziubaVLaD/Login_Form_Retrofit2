@@ -58,27 +58,22 @@ public class EmailAutoCompleteEditText extends android.support.v7.widget.AppComp
 
             /* Domains used in Mexico */
             "hotmail.com", "gmail.com", "yahoo.com.mx", "live.com.mx", "yahoo.com", "hotmail.es", "live.com", "hotmail.com.mx", "prodigy.net.mx", "msn.com",
-            // TODO delete this
-            /* Custom domains*/
-            "zalupa.com", "daun.com", "debil.com"
+
     };
 
     public EmailAutoCompleteEditText(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
-        Log.d("myDog",  "Constructor 1");
     }
 
     public EmailAutoCompleteEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
-        Log.d("myDog",  "Constructor 2");
     }
 
     public EmailAutoCompleteEditText(Context context) {
         super(context);
         init();
-        Log.d("myDog",  "Constructor 3");
     }
 
     public void init() {
@@ -86,18 +81,14 @@ public class EmailAutoCompleteEditText extends android.support.v7.widget.AppComp
         addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                Log.d("myDog",  "beforeTextChanged");
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.d("myDog",  "onTextChanged");
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                Log.d("myDog",  "afterTextChanged");
-                Log.d("myDog",  s.toString());
                 if (Patterns.EMAIL_ADDRESS.matcher(s).matches()) {
                     setError(null);
                 } else {
@@ -109,14 +100,10 @@ public class EmailAutoCompleteEditText extends android.support.v7.widget.AppComp
 
                 //If we have an @ sign + 1 char  then auto complete on a list of domains
                 int atSignPosition = str.indexOf('@');
-                Log.d("myDog", "atSignPosition > 1: " + (atSignPosition > 1));
-                Log.d("myDog", "atSignPosition < (str.length() + 1): " + (atSignPosition < (str.length() + 1)));
                 if (atSignPosition > 1
                         && atSignPosition < (str.length() + 1)) {
                     String lookup = str.substring(atSignPosition + 1);
                     String prefix = str.substring(0, atSignPosition + 1);
-                    Log.d("myDog", "lookup " + (lookup));
-                    Log.d("myDog", "prefix " + (prefix));
                     list = new ArrayList<String>();
                     for (String domain : domains) {
                         String option = prefix + domain;
@@ -125,7 +112,6 @@ public class EmailAutoCompleteEditText extends android.support.v7.widget.AppComp
                         }
                     }
                 } else {
-                    Log.d("myDog", "Strange block execution");
                     //Before we have an @ sign try and pull the email address from the device
                     Account[] accounts = AccountManager.get(getContext()).getAccountsByType("com.google");
                     list = new ArrayList<>();

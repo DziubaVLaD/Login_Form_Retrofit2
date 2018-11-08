@@ -141,9 +141,6 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
                 } else {
-                    Log.d("myDog", "couldn't handle response");
-                    Log.d("myDog", "code: " + response.code());
-                    Log.d("myDog", String.valueOf(resp));
                     return;
                 }
 
