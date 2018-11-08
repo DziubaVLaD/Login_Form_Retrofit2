@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
@@ -73,12 +74,10 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
-        AutoCompleteTextView auto = findViewById(R.id.input_email);
-
+        EmailAutoCompleteEditText auto = findViewById(R.id.input_email);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_dropdown_item_1line, EmailAutoCompleteEditText.domains);
-
+                android.R.layout.simple_expandable_list_item_1, EmailAutoCompleteEditText.domains);
         auto.setAdapter(adapter);
 
     }
@@ -139,7 +138,13 @@ public class MainActivity extends AppCompatActivity {
                             resp = adapter.fromJson(response.errorBody().string());
                     } catch (IOException e) {
                         e.printStackTrace();
+                        return;
                     }
+                } else {
+                    Log.d("myDog", "couldn't handle response");
+                    Log.d("myDog", "code: " + response.code());
+                    Log.d("myDog", String.valueOf(resp));
+                    return;
                 }
 
                 // continue validation
